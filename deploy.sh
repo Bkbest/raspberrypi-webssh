@@ -60,9 +60,6 @@ StandardError=journal
 WantedBy=multi-user.target
 EOF
 
-# Set proper permissions for service file
-chmod 644 "$UNIT_PATH"
-
 # Reload systemd, enable and start the service
 echo "Reloading systemd daemon..."
 sudo systemctl daemon-reload

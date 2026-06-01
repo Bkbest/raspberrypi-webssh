@@ -7,6 +7,7 @@ PORT="8888"
 CONFIG_FILE="/home/${RUN_USER}/webssh.conf"
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+VENV_DIR="$APP_DIR/.venv"
 
 # Check if the specified user exists
 if ! id "$RUN_USER" &>/dev/null; then
@@ -15,9 +16,17 @@ if ! id "$RUN_USER" &>/dev/null; then
   echo "Created user '$RUN_USER'"
 fi
 
-# Install WebSSH
+# Create Python virtual environment
+echo "Creating Python virtual environment..."
+python3 -m venv "$VENV_DIR"
+
+# Upgrade pip in virtual environment
+echo "Upgrading pip..."
+"$VENV_DIR/bin/pip" install --upgrade pip
+
+# Install WebSSH in virtual environment
 echo "Installing WebSSH..."
-pip3 install webssh
+"$VENV_DIR/bin/pip" install webssh
 
 # Copy WebSSH configuration file
 echo "Copying WebSSH configuration file..."
@@ -25,6 +34,7 @@ sudo cp "$APP_DIR/webssh.conf" "$CONFIG_FILE"
 
 # Set proper permissions
 echo "Setting permissions..."
+chown -R "$RUN_USER:$RUN_USER" "$VENV_DIR"
 chown -R "$RUN_USER:$RUN_USER" "$CONFIG_FILE"
 chmod 644 "$CONFIG_FILE"
 
@@ -40,7 +50,7 @@ After=network.target
 Type=simple
 User=${RUN_USER}
 WorkingDirectory=/home/${RUN_USER}
-ExecStart=/usr/local/bin/wssh --config=${CONFIG_FILE}
+ExecStart=${VENV_DIR}/bin/wssh --config=${CONFIG_FILE}
 Restart=always
 RestartSec=10
 StandardOutput=journal

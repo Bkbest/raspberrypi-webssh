@@ -30,7 +30,7 @@ echo "Installing WebSSH..."
 
 # Copy WebSSH configuration file
 echo "Copying WebSSH configuration file..."
-sudo cp "$APP_DIR/webssh.conf" "$CONFIG_FILE"
+cp "$APP_DIR/webssh.conf" "$CONFIG_FILE"
 
 # Set proper permissions
 echo "Setting permissions..."
